@@ -1,9 +1,9 @@
 <template>
   <div class="fantasy-container">
-    <FantasyHeader active-menu="home" />
+    <FantasyHeader active-menu="points" />
     <div class="main-content">
       <div class="placeholder-content">
-        <h1>Главная</h1>
+        <h1>Очки</h1>
         <p>Страница в разработке</p>
       </div>
     </div>
@@ -45,7 +45,7 @@ onMounted(async () => {
 .main-content {
   max-width: 1500px;
   margin: 0 auto;
-    padding: 2rem;
+  padding: 2rem;
 }
 
 .placeholder-content {
@@ -59,8 +59,8 @@ onMounted(async () => {
 .placeholder-content h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
-    }
-    
+}
+
 .placeholder-content p {
   font-size: 1.2rem;
   color: #c7c7e6;

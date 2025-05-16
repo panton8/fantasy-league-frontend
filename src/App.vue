@@ -3,26 +3,24 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
-import BeteraLogo from './assets/betera-logo.png'
 import { useUserStore } from '@/stores/user'
+import BeteraLogo from './assets/betera-logo.png'
 
 const router = useRouter()
 const clubs = ref([])
 const userStore = useUserStore()
+const activeDropdown = ref(null)
 
 const handleFantasyClick = (route) => {
   // Страницы без авторизации
   if (route === '/fantasy/prizes' || route === '/fantasy/help') {
-    router.push(route)
     return
   }
   
   // Для всех остальных страниц фэнтези требуется авторизация
   if (!userStore.isAuthenticated) {
     router.push('/auth')
-    return
   }
-  router.push(route)
 }
 
 const fetchClubs = async () => {
@@ -59,36 +57,40 @@ onMounted(async () => {
       @click="handleClubClick(club.pk)"
       :style="{ cursor: 'pointer' }"
     />
-    <div class="logo-wrapper">
-      <img :src="BeteraLogo" alt="Betera Logo" class="betera-logo" />
-    </div>
     <nav class="navbar">
       <div class="nav-content">
+        <img :src="BeteraLogo" alt="Betera" class="betera-logo-nav" />
         <div class="dropdown-menu">
-          <div class="dropdown-item">
+          <div class="dropdown-item" 
+               @mouseenter="activeDropdown = 'league'"
+               @mouseleave="activeDropdown = null">
             <span>Высшая Лига</span>
+            <div class="dropdown-overlay" v-if="activeDropdown === 'league'"></div>
             <div class="dropdown-content">
-              <a @click.prevent="router.push('/league/clubs')">Клубы</a>
-              <a @click.prevent="router.push('/league/upcoming')">Предстоящие игры</a>
-              <a @click.prevent="router.push('/league/results')">Результаты</a>
-              <a @click.prevent="router.push('/league/table')">Таблица</a>
-              <a @click.prevent="router.push('/league/stats')">Статистика</a>
-              <a @click.prevent="router.push('/league/news')">Новости</a>
+              <router-link to="/league/clubs">Клубы</router-link>
+              <router-link to="/league/upcoming">Предстоящие игры</router-link>
+              <router-link to="/league/results">Результаты</router-link>
+              <router-link to="/league/table">Таблица</router-link>
+              <router-link to="/league/stats">Статистика</router-link>
+              <router-link to="/league/news">Новости</router-link>
             </div>
           </div>
-          <div class="dropdown-item">
+          <div class="dropdown-item"
+               @mouseenter="activeDropdown = 'fantasy'"
+               @mouseleave="activeDropdown = null">
             <span>Фэнтези</span>
+            <div class="dropdown-overlay" v-if="activeDropdown === 'fantasy'"></div>
             <div class="dropdown-content">
-              <a @click.prevent="handleFantasyClick('/fantasy')">Фэнтези</a>
-              <a @click.prevent="handleFantasyClick('/fantasy/prizes')">Призы</a>
-              <a @click.prevent="handleFantasyClick('/fantasy/stats')">Статистика</a>
-              <a @click.prevent="handleFantasyClick('/fantasy/help')">Помощь</a>
+              <router-link to="/fantasy" @click="handleFantasyClick('/fantasy')">Фэнтези</router-link>
+              <router-link to="/fantasy/prizes" @click="handleFantasyClick('/fantasy/prizes')">Призы</router-link>
+              <router-link to="/fantasy/stats" @click="handleFantasyClick('/fantasy/stats')">Статистика</router-link>
+              <router-link to="/fantasy/help" @click="handleFantasyClick('/fantasy/help')">Помощь</router-link>
             </div>
           </div>
         </div>
       </div>
     </nav>
-    <main class="main-content">
+    <main class="main-content" :class="{ 'dropdown-active': activeDropdown !== null }">
       <router-view />
     </main>
   </div>
@@ -106,6 +108,20 @@ onMounted(async () => {
   margin: 0;
   padding: 0;
   background: white;
+  overflow: hidden;
+}
+
+.header {
+  background: linear-gradient(45deg, #37003c, #2d0066);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.betera-logo {
+  height: 40px;
+  object-fit: contain;
 }
 
 .club-logo {
@@ -115,6 +131,7 @@ onMounted(async () => {
   height: 50px;
   object-fit: contain;
   transition: transform 0.2s ease;
+  z-index: 1;
 
   &:hover {
     transform: scale(1.1);
@@ -145,12 +162,6 @@ onMounted(async () => {
   width: 120px;
   height: 120px;
   z-index: 1000;
-}
-
-.betera-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
   background: transparent;
 }
 
@@ -163,6 +174,8 @@ onMounted(async () => {
   height: 120px;
   position: relative;
   z-index: 1000;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
 .nav-content {
@@ -171,6 +184,15 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   height: 100%;
+  position: relative;
+}
+
+.betera-logo-nav {
+  height: 96px;
+  object-fit: contain;
+  position: absolute;
+  left: -312px;
+  z-index: 1001;
 }
 
 .dropdown-menu {
@@ -178,7 +200,7 @@ onMounted(async () => {
   gap: 40px;
   transform: translateX(-100px);
   position: relative;
-  z-index: 1001;
+  z-index: 1002;
 }
 
 .dropdown-item {
@@ -193,6 +215,9 @@ onMounted(async () => {
     display: block;
     min-width: 280px;
     text-align: center;
+    position: relative;
+    z-index: 1003;
+    transition: background-color 0.2s ease;
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
@@ -200,20 +225,51 @@ onMounted(async () => {
     }
   }
 
-  &:hover .dropdown-content {
-    display: block;
+  &:hover {
+    .dropdown-content {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+    
+    .dropdown-overlay {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+    }
   }
 }
 
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 1003;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
+}
+
 .dropdown-content {
-  display: none;
   position: absolute;
+  top: 100%;
+  left: 0;
   background-color: white;
   min-width: 280px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   border-radius: 4px;
   padding: 8px 0;
-  z-index: 1002;
+  z-index: 1004;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
   
   a {
     color: #333;
@@ -223,9 +279,15 @@ onMounted(async () => {
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1005;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    pointer-events: all;
     
     &:hover {
       background-color: #f5f5f5;
+      color: #1e3c72;
     }
   }
 }
@@ -234,10 +296,15 @@ onMounted(async () => {
   flex: 1;
   width: 100%;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 20px;
+  // padding: 20px;
   overflow-y: auto;
   position: relative;
   z-index: 1;
+  pointer-events: auto;
+  
+  &.dropdown-active {
+    pointer-events: none;
+  }
   
   .auth-container {
     max-width: 800px;
@@ -267,6 +334,21 @@ onMounted(async () => {
     &:nth-child(14) { left: 83%; }
     &:nth-child(15) { left: 89%; }
     &:nth-child(16) { left: 95%; }
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0.8rem 1rem;
+  }
+  
+  .betera-logo {
+    height: 30px;
+  }
+
+  .betera-logo-nav {
+    height: 64px;
+    left: -208px;
   }
 }
 </style>

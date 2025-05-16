@@ -170,163 +170,163 @@ const ruleSections = {
     `
   },
   transfers: {
-  title: 'Трансферы',
-  content: `
-    <div class="rules-subsection">
-      <h3 style="font-weight: bold;">Лимиты трансферов</h3>
-      <p class="description">После формирования состава вы можете покупать и продавать игроков на трансферном рынке. До первого дедлайна можно совершать неограниченное количество бесплатных трансферов.</p>
-      <p class="description">После первого дедлайна вы получаете 1 бесплатный трансфер каждую игровую неделю. Каждый дополнительный трансфер в той же неделе будет стоить 4 очка (вычитаются из вашего общего счёта").</p>
-      <p class="description">Если вы не используете бесплатный трансфер, он переносится на следующую неделю. Максимальное количество накопленных бесплатных трансферов - 2.</p>
- </div>
-    <div class="rules-subsection">
-      <h3 style="font-weight: bold;">Цены игроков</h3>
-      <p class="description">Цены игроков меняются в течение сезона в зависимости от их популярности на трансферном рынке. Изменения цен начинаются только после старта сезона.</p>
-    </div>
-  `
-},
+    title: 'Трансферы',
+    content: `
+      <div class="rules-subsection">
+        <h3 style="font-weight: bold;">Лимиты трансферов</h3>
+        <p class="description">После формирования состава вы можете покупать и продавать игроков на трансферном рынке. До первого дедлайна можно совершать неограниченное количество бесплатных трансферов.</p>
+        <p class="description">После первого дедлайна вы получаете 1 бесплатный трансфер каждую игровую неделю. Каждый дополнительный трансфер в той же неделе будет стоить 4 очка (вычитаются из вашего общего счёта).</p>
+        <p class="description">Если вы не используете бесплатный трансфер, он переносится на следующую неделю. Максимальное количество накопленных бесплатных трансферов - 2.</p>
+      </div>
+      <div class="rules-subsection">
+        <h3 style="font-weight: bold;">Цены игроков</h3>
+        <p class="description">Цены игроков меняются в течение сезона в зависимости от их популярности на трансферном рынке. Изменения цен начинаются только после старта сезона.</p>
+      </div>
+    `
+  },
   chips: {
-  title: 'Чипы',
-  content: `
-    <div class="rules-subsection">
-      <h3 style="font-weight: bold;">Использование чипов</h3>
-      <p class="description">Чипы могут быть использованы для улучшения результатов вашей команды в течение сезона.</p>
-      <p class="description">Только один чип может быть активирован в течение одной игровой недели. Доступные чипы:</p>
-      
-      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-        <tr style="border-bottom: 1px solid #ddd;">
-          <th style="padding: 8px; text-align: left; width: 40%;">Название</th>
-          <th style="padding: 8px; text-align: left;">Эффект</th>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;"><strong>Усиление скамейки</strong></td>
-          <td style="padding: 8px;">Очки, заработанные запасными игроками, добавляются к вашему общему счету</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px;"><strong>Тройной капитан</strong></td>
-          <td style="padding: 8px;">Очки вашего капитана утраиваются вместо удвоения</td>
-        </tr>
-      </table>
-    </div>
-  `
-},
+    title: 'Чипы',
+    content: `
+      <div class="rules-subsection">
+        <h3 style="font-weight: bold;">Использование чипов</h3>
+        <p class="description">Чипы могут быть использованы для улучшения результатов вашей команды в течение сезона.</p>
+        <p class="description">Только один чип может быть активирован в течение одной игровой недели. Доступные чипы:</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <tr style="border-bottom: 1px solid #ddd;">
+            <th style="padding: 8px; text-align: left; width: 40%;">Название</th>
+            <th style="padding: 8px; text-align: left;">Эффект</th>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;"><strong>Усиление скамейки</strong></td>
+            <td style="padding: 8px;">Очки, заработанные запасными игроками, добавляются к вашему общему счету</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px;"><strong>Тройной капитан</strong></td>
+            <td style="padding: 8px;">Очки вашего капитана утраиваются вместо удвоения</td>
+          </tr>
+        </table>
+      </div>
+    `
+  },
   deadlines: {
-  title: 'Дедлайны',
-  content: `
-    <div class="rules-subsection">
-      <h3 style="font-weight: bold;">Сроки изменений</h3>
-      <p class="description">Все изменения в составе (стартовый состав, трансферы, смена капитана, приоритеты замен) должны быть сделаны до дедлайна игровой недели, чтобы вступить в силу.</p>
-      <p class="description">Дедлайны могут изменяться и обычно устанавливаются за 90 минут до начала первого матча игровой недели.</p>
-    </div>
-  `
-},
+    title: 'Дедлайны',
+    content: `
+      <div class="rules-subsection">
+        <h3 style="font-weight: bold;">Сроки изменений</h3>
+        <p class="description">Все изменения в составе (стартовый состав, трансферы, смена капитана, приоритеты замен) должны быть сделаны до дедлайна игровой недели, чтобы вступить в силу.</p>
+        <p class="description">Дедлайны могут изменяться и обычно устанавливаются за 90 минут до начала первого матча игровой недели.</p>
+      </div>
+    `
+  },
   scoring: {
-  title: 'Подсчет очков',
-  content: `
-    <div class="rules-subsection">
-      <h3 style="font-weight: bold;">Система начисления очков</h3>
-      <p class="description">В течение сезона ваши игроки будут получать очки в зависимости от их выступлений в Премьер-лиге.</p>
-      
-      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-        <tr style="border-bottom: 1px solid #ddd;">
-          <th style="padding: 8px; text-align: left; width: 60%;">Действие</th>
-          <th style="padding: 8px; text-align: left;">Очки</th>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За игру до 60 минут</td>
-          <td style="padding: 8px;">1</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За игру 60 минут и более (без учета добавленного времени)</td>
-          <td style="padding: 8px;">2</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За каждый гол вратаря</td>
-          <td style="padding: 8px;">10</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За каждый гол защитника</td>
-          <td style="padding: 8px;">6</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За каждый гол полузащитника</td>
-          <td style="padding: 8px;">5</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За каждый гол нападающего</td>
-          <td style="padding: 8px;">4</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За каждую голевую передачу</td>
-          <td style="padding: 8px;">3</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За "сухой матч" вратаря или защитника</td>
-          <td style="padding: 8px;">4</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За "сухой матч" полузащитника</td>
-          <td style="padding: 8px;">1</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За каждые 3 сейва вратаря</td>
-          <td style="padding: 8px;">1</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За сейв пенальти</td>
-          <td style="padding: 8px;">5</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За промах с пенальти</td>
-          <td style="padding: 8px;">-2</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За каждые 2 пропущенных гола (вратарь/защитник)</td>
-          <td style="padding: 8px;">-1</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За желтую карточку</td>
-          <td style="padding: 8px;">-1</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-          <td style="padding: 8px;">За красную карточку</td>
-          <td style="padding: 8px;">-3</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px;">За автогол</td>
-          <td style="padding: 8px;">-2</td>
-        </tr>
-      </table>
-    </div>
+    title: 'Подсчет очков',
+    content: `
+      <div class="rules-subsection">
+        <h3 style="font-weight: bold;">Система начисления очков</h3>
+        <p class="description">В течение сезона ваши игроки будут получать очки в зависимости от их выступлений в Премьер-лиге.</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <tr style="border-bottom: 1px solid #ddd;">
+            <th style="padding: 8px; text-align: left; width: 60%;">Действие</th>
+            <th style="padding: 8px; text-align: left;">Очки</th>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За игру до 60 минут</td>
+            <td style="padding: 8px;">1</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За игру 60 минут и более (без учета добавленного времени)</td>
+            <td style="padding: 8px;">2</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За каждый гол вратаря</td>
+            <td style="padding: 8px;">10</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За каждый гол защитника</td>
+            <td style="padding: 8px;">6</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За каждый гол полузащитника</td>
+            <td style="padding: 8px;">5</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За каждый гол нападающего</td>
+            <td style="padding: 8px;">4</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За каждую голевую передачу</td>
+            <td style="padding: 8px;">3</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За "сухой матч" вратаря или защитника</td>
+            <td style="padding: 8px;">4</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За "сухой матч" полузащитника</td>
+            <td style="padding: 8px;">1</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За каждые 3 сейва вратаря</td>
+            <td style="padding: 8px;">1</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За сейв пенальти</td>
+            <td style="padding: 8px;">5</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За промах с пенальти</td>
+            <td style="padding: 8px;">-2</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За каждые 2 пропущенных гола (вратарь/защитник)</td>
+            <td style="padding: 8px;">-1</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За желтую карточку</td>
+            <td style="padding: 8px;">-1</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">За красную карточку</td>
+            <td style="padding: 8px;">-3</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px;">За автогол</td>
+            <td style="padding: 8px;">-2</td>
+          </tr>
+        </table>
+      </div>
 
-    <div class="rules-subsection">
-      <h3 style="font-weight: bold;">Дополнительные правила</h3>
-      <h4 style="font-weight: 600; margin-top: 15px;">"Сухой матч"</h4>
-      <p class="description">Начисляется, если игрок не пропускал голы, находясь на поле и сыграв не менее 60 минут (без учета добавленного времени).</p>
-      <p class="description">Если игрок был заменен до пропущенного гола, это не влияет на бонус за "сухой матч".</p>
+      <div class="rules-subsection">
+        <h3 style="font-weight: bold;">Дополнительные правила</h3>
+        <h4 style="font-weight: 600; margin-top: 15px;">"Сухой матч"</h4>
+        <p class="description">Начисляется, если игрок не пропускал голы, находясь на поле и сыграв не менее 60 минут (без учета добавленного времени).</p>
+        <p class="description">Если игрок был заменен до пропущенного гола, это не влияет на бонус за "сухой матч".</p>
 
-      <h4 style="font-weight: 600; margin-top: 15px;">Красные карточки</h4>
-      <p class="description">После получения красной карточки игрок продолжает терять очки за голы, пропущенные его командой.</p>
-      <p class="description">Штраф за красную карточку включает штрафные очки за желтую карточку.</p>
+        <h4 style="font-weight: 600; margin-top: 15px;">Красные карточки</h4>
+        <p class="description">После получения красной карточки игрок продолжает терять очки за голы, пропущенные его командой.</p>
+        <p class="description">Штраф за красную карточку включает штрафные очки за желтую карточку.</p>
 
-      <h4 style="font-weight: 600; margin-top: 15px;">Голевые передачи</h4>
-      <p class="description">Начисляются последнему игроку атакующей команды, коснувшемуся мяча перед голом. Это может быть намеренная передача, случайное касание или удар по воротам.</p>
-      <p class="description">Если соперник значительно изменил направление мяча после последней передачи, передача не засчитывается. Также не засчитываются передачи после ошибок защиты или если бомбардир сам потерял и вернул мяч.</p>
+        <h4 style="font-weight: 600; margin-top: 15px;">Голевые передачи</h4>
+        <p class="description">Начисляются последнему игроку атакующей команды, коснувшемуся мяча перед голом. Это может быть намеренная передача, случайное касание или удар по воротам.</p>
+        <p class="description">Если соперник значительно изменил направление мяча после последней передачи, передача не засчитывается. Также не засчитываются передачи после ошибок защиты или если бомбардир сам потерял и вернул мяч.</p>
 
-      <h4 style="font-weight: 600; margin-top: 15px;">Отскоки</h4>
-      <p class="description">Если после удара (блокированного защитником, отраженного вратарем или от штанги) забит гол, начисляется голевая передача. Удар не обязательно должен быть точным.</p>
-      <p class="description">Если после отскока мяч значительно изменил направление из-за соперника, передача не засчитывается.</p>
+        <h4 style="font-weight: 600; margin-top: 15px;">Отскоки</h4>
+        <p class="description">Если после удара (блокированного защитником, отраженного вратарем или от штанги) забит гол, начисляется голевая передача. Удар не обязательно должен быть точным.</p>
+        <p class="description">Если после отскока мяч значительно изменил направление из-за соперника, передача не засчитывается.</p>
 
-      <h4 style="font-weight: 600; margin-top: 15px;">Автоголы</h4>
-      <p class="description">Если игрок вынудил соперника забить автогол (ударом или передачей), начисляется голевая передача. При значительном изменении направления мяча передача не засчитывается.</p>
+        <h4 style="font-weight: 600; margin-top: 15px;">Автоголы</h4>
+        <p class="description">Если игрок вынудил соперника забить автогол (ударом или передачей), начисляется голевая передача. При значительном изменении направления мяча передача не засчитывается.</p>
 
-      <h4 style="font-weight: 600; margin-top: 15px;">Пенальти и штрафные</h4>
-      <p class="description">При реализации пенальти или штрафного игрок, заработавший его, получает голевую передачу. Если исполнитель и заработавший - один игрок, передача не засчитывается.</p>
+        <h4 style="font-weight: 600; margin-top: 15px;">Пенальти и штрафные</h4>
+        <p class="description">При реализации пенальти или штрафного игрок, заработавший его, получает голевую передачу. Если исполнитель и заработавший - один игрок, передача не засчитывается.</p>
 
-      <h4 style="font-weight: 600; margin-top: 15px;">Финальное начисление</h4>
-      <p class="description">Очки могут корректироваться до часа после окончания последнего матча недели. После этого изменения возможны только в исключительных случаях.</p>
-    </div>
-  `
-}
+        <h4 style="font-weight: 600; margin-top: 15px;">Финальное начисление</h4>
+        <p class="description">Очки могут корректироваться до часа после окончания последнего матча недели. После этого изменения возможны только в исключительных случаях.</p>
+      </div>
+    `
+  }
 }
 
 const toggleQuestion = (key) => {
@@ -346,6 +346,8 @@ const toggleRuleSection = (key) => {
   background: linear-gradient(to bottom, #ffffff, #fafafa);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(55, 0, 60, 0.08);
+  position: relative;
+  z-index: 1;
 }
 
 .help-header {
@@ -386,6 +388,8 @@ const toggleRuleSection = (key) => {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  position: relative;
+  z-index: 2;
 
   &:hover {
     background: #e8e8e8;
@@ -401,6 +405,8 @@ const toggleRuleSection = (key) => {
 
 .section {
   margin-bottom: 3rem;
+  position: relative;
+  z-index: 2;
 
   h2 {
     color: #37003c;
@@ -430,6 +436,8 @@ const toggleRuleSection = (key) => {
   overflow: hidden;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  position: relative;
+  z-index: 2;
 
   &:hover {
     box-shadow: 0 6px 16px rgba(0,0,0,0.06);
@@ -448,6 +456,8 @@ const toggleRuleSection = (key) => {
   font-size: 1.1rem;
   color: #37003c;
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 3;
 
   &:hover {
     background: #f0f0f0;
@@ -461,6 +471,8 @@ const toggleRuleSection = (key) => {
     transform: rotate(-45deg);
     transition: transform 0.3s ease;
     margin-left: 1rem;
+    position: relative;
+    z-index: 4;
 
     &.down {
       transform: rotate(45deg);
@@ -476,6 +488,8 @@ const toggleRuleSection = (key) => {
   line-height: 1.7;
   font-size: 1.1rem;
   font-weight: 400;
+  position: relative;
+  z-index: 2;
 
   p {
     margin-bottom: 1rem;
@@ -486,21 +500,6 @@ const toggleRuleSection = (key) => {
   }
 }
 
-// Добавляем анимацию для ответов
-.answer-enter-active,
-.answer-leave-active {
-  transition: all 0.3s ease;
-  max-height: 500px;
-}
-
-.answer-enter-from,
-.answer-leave-to {
-  max-height: 0;
-  opacity: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
 .rules-section {
   margin-bottom: 1.5rem;
   background: white;
@@ -508,6 +507,8 @@ const toggleRuleSection = (key) => {
   box-shadow: 0 4px 16px rgba(55, 0, 60, 0.06);
   transition: all 0.3s ease;
   border: 1px solid rgba(55, 0, 60, 0.08);
+  position: relative;
+  z-index: 2;
 
   &:hover {
     box-shadow: 0 6px 24px rgba(55, 0, 60, 0.1);
@@ -520,6 +521,8 @@ const toggleRuleSection = (key) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 3;
   
   h2 {
     color: #37003c;
@@ -542,6 +545,8 @@ const toggleRuleSection = (key) => {
     transform: rotate(-45deg);
     transition: transform 0.3s ease;
     margin-left: 1rem;
+    position: relative;
+    z-index: 4;
 
     &.down {
       transform: rotate(45deg);
@@ -556,6 +561,8 @@ const toggleRuleSection = (key) => {
   font-size: 1.1rem;
   border-top: 1px solid rgba(55, 0, 60, 0.1);
   background: linear-gradient(to bottom, #ffffff, #fafafa);
+  position: relative;
+  z-index: 2;
   
   p {
     margin-bottom: 1.5rem;
@@ -604,6 +611,8 @@ const toggleRuleSection = (key) => {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(55, 0, 60, 0.03);
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
   
   &:last-child {
     margin-bottom: 0;
@@ -694,4 +703,35 @@ const toggleRuleSection = (key) => {
     }
   }
 }
-</style> 
+
+/* Анимации */
+.answer-enter-active,
+.answer-leave-active {
+  transition: all 0.3s ease;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.answer-enter-from,
+.answer-leave-to {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.rules-content-enter-active,
+.rules-content-leave-active {
+  transition: all 0.3s ease;
+  max-height: 2000px;
+  overflow: hidden;
+}
+
+.rules-content-enter-from,
+.rules-content-leave-to {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+</style>
