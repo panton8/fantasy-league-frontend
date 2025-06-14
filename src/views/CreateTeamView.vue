@@ -162,6 +162,7 @@
         </div>
       </aside>
     </main>
+    <PopupModal :visible="showPopup" :message="popupMsg" @close="showPopup = false" />
   </div>
 </template>
 
@@ -170,6 +171,7 @@ import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { onMounted, computed, ref, watch } from 'vue'
 import UserInfo from '@/components/UserInfo.vue'
+import PopupModal from '@/components/PopupModal.vue'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -202,32 +204,34 @@ const selectedCount = computed(() =>
   [...squad.value.gkp, ...squad.value.def, ...squad.value.mid, ...squad.value.fwd].filter(Boolean).length
 )
 const showLimitMsg = ref('')
+const showPopup = ref(false)
+const popupMsg = ref('')
 
 function addPlayerToSquad(player) {
   const pos = player.position
   const idx = squad.value[pos].findIndex(p => p === null)
   if (idx === -1) {
-    showLimitMsg.value = `Максимальное количество игроков позиции уже выбрано!`
-    setTimeout(() => showLimitMsg.value = '', 2000)
+    popupMsg.value = `Максимальное количество игроков позиции уже выбрано!`
+    showPopup.value = true
     return
   }
   if (budget.value < parseFloat(player.cost)) {
-    showLimitMsg.value = 'Недостаточно бюджета!'
-    setTimeout(() => showLimitMsg.value = '', 2000)
+    popupMsg.value = 'Недостаточно бюджета!'
+    showPopup.value = true
     return
   }
   // Проверка на лимит игроков из одного клуба
   const allPlayers = [...squad.value.gkp, ...squad.value.def, ...squad.value.mid, ...squad.value.fwd].filter(Boolean)
   const sameClubCount = allPlayers.filter(p => p.club === player.club).length
   if (sameClubCount >= 3) {
-    showLimitMsg.value = 'В составе не может быть больше 3 игроков из одного клуба!'
-    setTimeout(() => showLimitMsg.value = '', 2000)
+    popupMsg.value = 'В составе не может быть больше 3 игроков из одного клуба!'
+    showPopup.value = true
     return
   }
   // Запретить дублирование одного и того же игрока
   if (allPlayers.some(p => p && p.id === player.id)) {
-    showLimitMsg.value = 'Этот игрок уже в составе!'
-    setTimeout(() => showLimitMsg.value = '', 2000)
+    popupMsg.value = 'Этот игрок уже в составе!'
+    showPopup.value = true
     return
   }
   squad.value[pos][idx] = player

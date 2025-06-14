@@ -4,6 +4,7 @@ import AuthView from '@/views/AuthView.vue'
 import MyTeamView from '@/views/MyTeamView.vue'
 import CreateTeamView from '@/views/CreateTeamView.vue'
 import MatchDetails from '@/components/MatchDetails.vue'
+import PointsView from '@/views/PointsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -108,6 +109,12 @@ const router = createRouter({
       path: '/league/match/:id',
       name: 'match-details',
       component: MatchDetails
+    },
+    {
+      path: '/points',
+      name: 'points',
+      component: PointsView,
+      meta: { requiresAuth: true }
     }
   ]
 })
