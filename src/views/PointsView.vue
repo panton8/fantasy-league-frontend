@@ -1,18 +1,6 @@
 <template>
   <div class="fantasy-container">
-    <div class="fantasy-hero">
-      <div class="fantasy-hero-bg"></div>
-      <div class="fantasy-hero-content">
-        <div class="fantasy-logo-block">
-          <img src="@/assets/fantasy-logo.png" alt="Fantasy League" class="fantasy-logo" />
-        </div>
-        <UserInfo />
-      </div>
-      <nav class="fantasy-menu">
-        <button class="menu-btn" :class="{active: activeMenu === 'points'}" @click="handleMenuClick('points')">Очки</button>
-        <button class="menu-btn" :class="{active: activeMenu === 'myteam'}" @click="handleMenuClick('myteam')">Моя команда</button>
-      </nav>
-    </div>
+    <FantasyHeader :active-menu="'points'" />
     <main class="main-content fantasy-main-flex">
       <div class="fantasy-squad-setup">
         <div class="squad-header">
@@ -63,6 +51,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import UserInfo from '@/components/UserInfo.vue'
+import FantasyHeader from '@/components/FantasyHeader.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -406,8 +395,8 @@ const totalPoints = computed(() => {
   text-align: center;
   color: #fff;
   background: #37003c;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.5rem;
+  font-weight: 500;
   border-radius: 4px 4px 0 0;
   padding: 0.1rem 0;
   z-index: 2;

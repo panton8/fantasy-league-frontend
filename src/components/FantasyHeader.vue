@@ -34,7 +34,7 @@ const userStore = useUserStore()
 
 const handleMenuClick = (key) => {
   if (key === 'home') {
-    router.push('/')
+    router.push('/fantasy')
   } else if (key === 'myteam') {
     if (userStore.profile?.is_team_created) {
       router.push('/my-team')

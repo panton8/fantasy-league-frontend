@@ -1,18 +1,6 @@
 <template>
   <div class="fantasy-container">
-    <div class="fantasy-hero">
-      <div class="fantasy-hero-bg"></div>
-      <div class="fantasy-hero-content">
-        <div class="fantasy-logo-block">
-          <img src="@/assets/fantasy-logo.png" alt="Fantasy League" class="fantasy-logo" />
-        </div>
-        <UserInfo />
-      </div>
-      <nav class="fantasy-menu">
-        <button class="menu-btn" :class="{active: activeMenu === 'home'}" @click="handleMenuClick('home')">Главная</button>
-        <button class="menu-btn" :class="{active: activeMenu === 'myteam'}" @click="handleMenuClick('myteam')">Моя команда</button>
-      </nav>
-    </div>
+    <FantasyHeader :active-menu="'myteam'" />
     <main class="main-content fantasy-main-flex">
       <div class="fantasy-squad-setup">
         <div class="squad-header">
@@ -172,6 +160,7 @@ import { useRouter } from 'vue-router'
 import { onMounted, computed, ref, watch } from 'vue'
 import UserInfo from '@/components/UserInfo.vue'
 import PopupModal from '@/components/PopupModal.vue'
+import FantasyHeader from '@/components/FantasyHeader.vue'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -180,7 +169,7 @@ const activeMenu = ref('myteam')
 const handleMenuClick = (key) => {
   activeMenu.value = key
   if (key === 'home') {
-    router.push('/')
+    router.push('/fantasy')
   } else if (key === 'myteam') {
     if (userStore.profile?.is_team_created) {
       router.push('/my-team')

@@ -1,8 +1,7 @@
 <template>
   <div class="fantasy-container">
-    <FantasyHeader active-menu="myteam" />
-    <CreateTeamView v-if="!userStore.profile?.is_team_created" />
-    <div v-else class="main-content">
+    <FantasyHeader :active-menu="activeMenu" />
+    <div v-if="userStore.profile?.is_team_created" class="main-content">
       <div class="fantasy-squad-setup">
         <div class="squad-header">
           <div class="header-left">
@@ -14,9 +13,9 @@
 
         <div class="squad-container">
           <!-- Основной состав -->
-          <div class="squad-section">
+          <div class="squad-section" :class="{ 'swap-mode': isSwapMode }">
             <div class="squad-row">
-              <div v-for="player in squad.gkp" :key="player.id" class="player-slot">
+              <div v-for="player in squad.gkp" :key="player.id" class="player-slot" @click="openSwapModal(player)">
                 <div class="player-card">
                   <img :src="player.t_shirt" :alt="player.surname" class="player-shirt">
                   <div class="player-info">
@@ -28,7 +27,7 @@
               </div>
             </div>
             <div class="squad-row">
-              <div v-for="player in squad.def" :key="player.id" class="player-slot">
+              <div v-for="player in squad.def" :key="player.id" class="player-slot" @click="openSwapModal(player)">
                 <div class="player-card">
                   <img :src="player.t_shirt" :alt="player.surname" class="player-shirt">
                   <div class="player-info">
@@ -40,7 +39,7 @@
               </div>
             </div>
             <div class="squad-row">
-              <div v-for="player in squad.mid" :key="player.id" class="player-slot">
+              <div v-for="player in squad.mid" :key="player.id" class="player-slot" @click="openSwapModal(player)">
                 <div class="player-card">
                   <img :src="player.t_shirt" :alt="player.surname" class="player-shirt">
                   <div class="player-info">
@@ -52,7 +51,7 @@
               </div>
             </div>
             <div class="squad-row">
-              <div v-for="player in squad.fwd" :key="player.id" class="player-slot">
+              <div v-for="player in squad.fwd" :key="player.id" class="player-slot" @click="openSwapModal(player)">
                 <div class="player-card">
                   <img :src="player.t_shirt" :alt="player.surname" class="player-shirt">
                   <div class="player-info">
@@ -69,13 +68,20 @@
           <div class="bench-section">
             <h3>Запасные</h3>
             <div class="bench-row">
-              <div v-for="player in [...bench.gkp, ...bench.def, ...bench.mid, ...bench.fwd]" :key="player.id" class="player-slot">
+              <div 
+                v-for="player in [...bench.gkp, ...bench.def, ...bench.mid, ...bench.fwd]" 
+                :key="player.id" 
+                class="player-slot"
+                :class="{ 'highlighted': isSwapMode && player.position === playerToSwap?.position }"
+                @click="handleBenchPlayerClick(player)"
+              >
                 <div class="player-card">
                   <div class="bench-position">{{ getPositionLabel(player.position) }}</div>
                   <img :src="player.t_shirt" :alt="player.surname" class="player-shirt">
                   <div class="player-info bench-info">
                     <span class="player-name bench-name">{{ player.surname }}</span>
                   </div>
+                  <span v-if="player.is_captain" class="captain-badge">C</span>
                 </div>
               </div>
             </div>
@@ -83,6 +89,15 @@
         </div>
       </div>
     </div>
+
+    <PlayerSwapModal
+      :visible="showSwapModal"
+      :current-player="selectedPlayer"
+      @close="closeSwapModal"
+      @startSwap="startSwap"
+      @captainChanged="fetchTeamInfo"
+    />
+    <PopupModal :visible="showPopup" :message="popupMsg" @close="showPopup = false" />
   </div>
 </template>
 
@@ -93,7 +108,8 @@ import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import UserInfo from '@/components/UserInfo.vue'
 import FantasyHeader from '@/components/FantasyHeader.vue'
-import CreateTeamView from '@/views/CreateTeamView.vue'
+import PlayerSwapModal from '@/components/PlayerSwapModal.vue'
+import PopupModal from '@/components/PopupModal.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -111,6 +127,14 @@ const bench = ref({
   mid: [],
   fwd: []
 })
+
+const showSwapModal = ref(false)
+const selectedPlayer = ref(null)
+const isSwapMode = ref(false)
+const playerToSwap = ref(null)
+
+const showPopup = ref(false)
+const popupMsg = ref('')
 
 // Вычисляемое свойство для имени команды
 const teamName = computed(() => {
@@ -140,7 +164,7 @@ const handleMenuClick = (menu) => {
       router.push('/my-team')
       break
     case 'transfers':
-      router.push('/fantasy/transfers')
+      router.push('/transfers')
       break
     case 'leagues':
       router.push('/fantasy/leagues')
@@ -158,11 +182,9 @@ const handleLogout = async () => {
 }
 
 const fetchTeamInfo = async () => {
-  console.log('Начало загрузки информации о команде')
   try {
     const accessToken = userStore.accessToken
     if (!accessToken) {
-      console.error('Нет токена доступа')
       return
     }
 
@@ -173,12 +195,10 @@ const fetchTeamInfo = async () => {
     })
 
     if (!response.ok) {
-      console.error('Ошибка при получении информации о команде:', response.status)
       return
     }
 
     const data = await response.json()
-    console.log('Получены данные команды:', data)
 
     // Очищаем текущие данные
     squad.value = {
@@ -196,10 +216,8 @@ const fetchTeamInfo = async () => {
 
     // Обрабатываем стартовый состав
     if (data.start_players && data.start_players.length > 0) {
-      console.log('Обработка стартового состава:', data.start_players)
       data.start_players.forEach(player => {
         const position = player.position.toLowerCase()
-        console.log('Обработка игрока:', { surname: player.surname, position })
         if (squad.value[position]) {
           squad.value[position].push({
             id: player.id,
@@ -214,10 +232,8 @@ const fetchTeamInfo = async () => {
 
     // Обрабатываем запасных
     if (data.bench_players && data.bench_players.length > 0) {
-      console.log('Обработка запасных:', data.bench_players)
       data.bench_players.forEach(player => {
         const position = player.position.toLowerCase()
-        console.log('Обработка запасного игрока:', { surname: player.surname, position })
         if (bench.value[position]) {
           bench.value[position].push({
             id: player.id,
@@ -229,45 +245,120 @@ const fetchTeamInfo = async () => {
         }
       })
     }
-
-    console.log('Итоговый состав:', { squad: squad.value, bench: bench.value })
   } catch (error) {
-    console.error('Ошибка при загрузке информации о команде:', error)
   }
 }
 
-const fetchUserProfile = async () => {
-  console.log('Начало загрузки профиля пользователя')
+const openSwapModal = (player) => {
+  if (isSwapMode.value) return
+  selectedPlayer.value = player
+  showSwapModal.value = true
+}
+
+const closeSwapModal = () => {
+  showSwapModal.value = false
+  selectedPlayer.value = null
+}
+
+const startSwap = (player) => {
+  playerToSwap.value = player
+  isSwapMode.value = true
+  closeSwapModal()
+}
+
+const handleBenchPlayerClick = async (player) => {
+  if (!isSwapMode.value || !playerToSwap.value) return;
+
+  console.log('Starting swap validation:');
+  console.log('Player to swap (outgoing):', playerToSwap.value);
+  console.log('Bench player (incoming):', player);
+
+  // Создаем копию текущего состава
+  const newSquad = JSON.parse(JSON.stringify(squad.value));
+  console.log('Initial newSquad copy:', newSquad);
+
+  // Определяем фактические позиции игроков для замены
+  const outgoingPlayerPosition = playerToSwap.value.position.toLowerCase();
+  const incomingPlayerPosition = player.position.toLowerCase();
+
+  // Удаляем старого игрока из его фактической позиции
+  newSquad[outgoingPlayerPosition] = newSquad[outgoingPlayerPosition].filter(p => p.id !== playerToSwap.value.id);
+  console.log('newSquad after removing outgoing player:', newSquad);
+
+  // Добавляем нового игрока в его фактическую позицию
+  newSquad[incomingPlayerPosition].push(player);
+  console.log('newSquad after adding incoming player:', newSquad);
+
+  // Считаем количество игроков по позициям
+  const positionCounts = {
+    gkp: newSquad.gkp.length,
+    def: newSquad.def.length,
+    mid: newSquad.mid.length,
+    fwd: newSquad.fwd.length
+  };
+  console.log('Calculated positionCounts:', positionCounts);
+
+  // Проверяем ограничения
+  let errorMessage = null;
+
+  if (positionCounts.gkp !== 1) {
+    errorMessage = 'В основном составе должен быть ровно 1 вратарь';
+  } else if (positionCounts.def < 3 || positionCounts.def > 5) {
+    errorMessage = 'В основном составе должно быть от 3 до 5 защитников';
+  } else if (positionCounts.mid < 3 || positionCounts.mid > 5) {
+    errorMessage = 'В основном составе должно быть от 3 до 5 полузащитников';
+  } else if (positionCounts.fwd < 1 || positionCounts.fwd > 3) {
+    errorMessage = 'В основном составе должно быть от 1 до 3 нападающих';
+  }
+
+  if (errorMessage) {
+    console.log('Validation failed:', errorMessage);
+    popupMsg.value = errorMessage;
+    showPopup.value = true;
+    return;
+  }
+  console.log('Validation passed. Proceeding with API call.');
+
   try {
     const accessToken = userStore.accessToken
     if (!accessToken) {
-      console.error('Нет токена доступа')
+      popupMsg.value = 'Нет токена доступа. Пожалуйста, войдите снова.';
+      showPopup.value = true;
       return
     }
 
-    const response = await fetch('http://127.0.0.1:8000/api/internal/v1/user/profile/', {
+    const response = await fetch('http://127.0.0.1:8000/api/internal/v1/user/team/make-sub/', {
+      method: 'PATCH',
       headers: {
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
-      }
+      },
+      body: JSON.stringify({
+        new_player: player.id,
+        old_player: playerToSwap.value.id
+      })
     })
 
     if (!response.ok) {
-      console.error('Ошибка при получении профиля:', response.status)
-      return
+      throw new Error('Ошибка при замене игроков')
     }
 
-    const data = await response.json()
-    console.log('Получены данные профиля:', data)
-    userStore.setUserProfile(data)
+    await fetchTeamInfo()
   } catch (error) {
-    console.error('Ошибка при загрузке профиля:', error)
+    popupMsg.value = 'Произошла ошибка при замене игроков';
+    showPopup.value = true;
+  } finally {
+    isSwapMode.value = false
+    playerToSwap.value = null
   }
 }
 
-onMounted(async () => {
-  console.log('Компонент MyTeamView смонтирован')
-  await Promise.all([fetchUserProfile(), fetchTeamInfo()])
-  console.log('Загрузка данных завершена')
+onMounted(() => {
+  if (!userStore.profile?.is_team_created) {
+    router.replace('/create-team')
+  } else {
+    fetchTeamInfo()
+  }
 })
 </script>
 
@@ -446,6 +537,16 @@ onMounted(async () => {
   margin-right: auto;
 }
 
+/* Специальные стили для ряда с вратарем */
+.squad-row:first-child {
+  justify-content: center;
+  min-height: 135px;
+}
+
+.squad-row:first-child .player-slot {
+  margin: 0 auto;
+}
+
 .squad-row:last-child {
   border-bottom: none;
   margin-bottom: 0;
@@ -455,6 +556,12 @@ onMounted(async () => {
   width: 97px;
   height: 125px;
   position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.player-slot:hover {
+  transform: translateY(-2px);
 }
 
 .player-card {
@@ -466,13 +573,13 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
+  transition: all 0.3s ease;
   position: relative;
+  border: 1px solid #ddd;
 }
 
 .player-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .player-shirt {
@@ -571,21 +678,9 @@ onMounted(async () => {
   font-size: 0.85rem;
 }
 
-.captain-badge {
-  position: absolute;
-  top: -5.5rem;
-  left: 0.5rem;
-  background: #ff2e6e;
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.85rem;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  z-index: 2;
+.bench-row .captain-badge {
+  top: 35px;
+  left: 2px;
 }
 
 .bench-position {
@@ -596,7 +691,7 @@ onMounted(async () => {
   text-align: center;
   color: #fff;
   background: #37003c;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   border-radius: 4px 4px 0 0;
   padding: 0.1rem 0;
@@ -612,6 +707,30 @@ onMounted(async () => {
 .bench-name {
   display: block;
   margin-bottom:-1.25rem;
+}
+
+.player-info {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0;
+  right: 0;
+}
+
+.captain-badge {
+  position: absolute;
+  top: -5.5rem;
+  left: 0.2rem;
+  background: #ff2e6e;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  z-index: 2;
 }
 
 @media (max-width: 1100px) {
@@ -681,6 +800,30 @@ onMounted(async () => {
   
   .price {
     margin-left: 10px;
+  }
+}
+
+.squad-section.swap-mode .player-card {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.player-slot.highlighted {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
   }
 }
 </style> 

@@ -6,9 +6,9 @@
           <img src="@/assets/fantasy-logo.png" alt="Fantasy League" class="logo">
           <nav class="main-nav">
             <router-link to="/fantasy" class="nav-item">Главная</router-link>
-            <router-link to="/fantasy/transfers" class="nav-item">Трансферы</router-link>
-            <router-link to="/fantasy/leagues" class="nav-item active">Лиги</router-link>
-            <router-link to="/fantasy/stats" class="nav-item">Статистика</router-link>
+            <router-link to="/transfers" class="nav-item">Трансферы</router-link>
+            <router-link to="/leagues" class="nav-item active">Лиги</router-link>
+            <router-link to="/stats" class="nav-item">Статистика</router-link>
           </nav>
         </div>
         

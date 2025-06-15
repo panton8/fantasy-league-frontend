@@ -28,7 +28,7 @@ const router = createRouter({
     },
     {
       path: '/',
-      redirect: '/my-team'
+      redirect: '/fantasy'
     },
     {
       path: '/fantasy',
@@ -37,13 +37,13 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/fantasy/transfers',
+      path: '/transfers',
       name: 'transfers',
       component: () => import('@/views/TransfersView.vue'),
       meta: { requiresAuth: true }
     },
     {
-      path: '/fantasy/leagues',
+      path: '/leagues',
       name: 'leagues',
       component: () => import('@/views/LeagueView.vue'),
       meta: { requiresAuth: true }
