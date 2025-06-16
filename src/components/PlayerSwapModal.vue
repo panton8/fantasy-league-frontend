@@ -11,12 +11,13 @@
         <div class="player-info">
           <span class="player-name">{{ currentPlayer.surname }}</span>
           <span class="player-position">{{ getPositionLabel(currentPlayer.position) }}</span>
-          <span class="player-cost">{{ currentPlayer.cost }}M</span>
+          <span class="player-cost">{{ currentPlayer.cost }}</span>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button class="transfer-button" @click="handleTransfer">Совершить трансфер</button>
+        <button class="swap-button" @click="handleSwap">Сделать замену</button>
+        <button class="captain-button" @click="handleCaptain">Сделать капитаном</button>
       </div>
     </div>
   </div>
@@ -40,7 +41,7 @@ const props = defineProps({
   currentPlayer: Object
 })
 
-const emit = defineEmits(['close', 'startSwap'])
+const emit = defineEmits(['close', 'startSwap', 'captainChanged'])
 const showPlayersList = ref(false)
 const availablePlayers = ref([])
 const userStore = useUserStore()
@@ -55,27 +56,37 @@ const getPositionLabel = (position) => {
   return labels[position.toLowerCase()] || position
 }
 
-const handleTransfer = async () => {
-  const accessToken = userStore.accessToken
-  if (!accessToken) {
-    return
-  }
+const handleSwap = () => {
+  emit('startSwap', props.currentPlayer)
+  emit('close')
+}
 
-  const response = await fetch(`http://127.0.0.1:8000/api/internal/v1/player/?position=${props.currentPlayer.position}`, {
-    headers: {
-      'Authorization': `Bearer ${accessToken}`
+const handleCaptain = async () => {
+  try {
+    const accessToken = userStore.accessToken
+    if (!accessToken) {
+      return
     }
-  })
 
-  if (!response.ok) {
-    return
-  }
+    const response = await fetch('http://127.0.0.1:8000/api/internal/v1/user/team/change-captain/', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({
+        captain_id: props.currentPlayer.id
+      })
+    })
 
-  const data = await response.json()
-  if (data.results) {
-    availablePlayers.value = data.results
-    showPlayersList.value = true
+    if (!response.ok) {
+      throw new Error('Ошибка при назначении капитана')
+    }
+
+    emit('captainChanged')
     emit('close')
+  } catch (error) {
+    console.error('Ошибка при назначении капитана:', error)
   }
 }
 
@@ -166,10 +177,12 @@ const selectPlayer = (player) => {
 .modal-footer {
   margin-top: 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.transfer-button {
-  background-color: #00c48c;
+.swap-button, .captain-button {
   color: white;
   border: none;
   padding: 10px 20px;
@@ -177,9 +190,22 @@ const selectPlayer = (player) => {
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s;
+  width: 100%;
 }
 
-.transfer-button:hover {
+.swap-button {
+  background-color: #00c48c;
+}
+
+.swap-button:hover {
   background-color: #00a87a;
+}
+
+.captain-button {
+  background-color: #ff2e6e;
+}
+
+.captain-button:hover {
+  background-color: #e61e5d;
 }
 </style> 

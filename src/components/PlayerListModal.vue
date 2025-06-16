@@ -1,11 +1,6 @@
 <template>
   <div v-if="visible" class="modal-overlay" @click="$emit('close')">
     <div class="modal-content" @click.stop>
-      <div class="modal-header">
-        <h2>Выберите игрока</h2>
-        <button class="close-button" @click="$emit('close')">&times;</button>
-      </div>
-      <div class="modal-body">
         <div class="players-list">
           <div
             v-for="player in filteredPlayers"
@@ -23,17 +18,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button 
-          class="confirm-button" 
-          :class="{ 'disabled': !selectedPlayerId }"
-          :disabled="!selectedPlayerId"
-          @click="confirmSelection"
-        >
-          Подтвердить выбор
-        </button>
-      </div>
     </div>
   </div>
 </template>
@@ -48,12 +32,17 @@ const props = defineProps({
   players: {
     type: Array,
     default: () => []
+  },
+  playerToReplace: {
+    type: Number,
+    default: null
   }
 })
 
 const emit = defineEmits(['close', 'select'])
 const userStore = useUserStore()
 const selectedPlayerId = ref(null)
+const isTransferring = ref(false)
 
 const getPositionLabel = (position) => {
   const labels = {
@@ -90,12 +79,14 @@ const selectPlayer = (player) => {
   selectedPlayerId.value = player.id
 }
 
-const confirmSelection = () => {
-  if (selectedPlayerId.value) {
-    const selectedPlayer = props.players.find(p => p.id === selectedPlayerId.value)
-    if (selectedPlayer) {
-      emit('select', selectedPlayer)
-    }
+const confirmSelection = async () => {
+  if (!selectedPlayerId.value) return
+
+  const selectedPlayer = props.players.find(p => p.id === selectedPlayerId.value)
+  if (selectedPlayer) {
+    console.log('Отправка выбранного игрока:', selectedPlayer)
+    emit('select', selectedPlayer)
+    emit('close')
   }
 }
 </script>

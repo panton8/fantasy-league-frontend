@@ -100,16 +100,17 @@
       </div>
     </div>
 
-    <PlayerSwapModal
-      :visible="showTransferModal"
+    <TransferPlayerModal
+      :is-open="isTransferModalOpen"
       :current-player="selectedPlayer"
       @close="closeTransferModal"
-      @startSwap="handleTransfer"
+      @transfer="handleTransfer"
     />
     <PlayerListModal
       :visible="showPlayerList"
       :position="selectedPlayer?.position"
       :players="availablePlayers"
+      :player-to-replace="selectedPlayer?.id"
       @close="closePlayerList"
       @select="handlePlayerSelect"
     />
@@ -122,7 +123,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import FantasyHeader from '@/components/FantasyHeader.vue'
-import PlayerSwapModal from '@/components/PlayerSwapModal.vue'
+import TransferPlayerModal from '@/components/TransferPlayerModal.vue'
 import PlayerListModal from '@/components/PlayerListModal.vue'
 
 const router = useRouter()
@@ -147,29 +148,29 @@ const showTransferModal = ref(false)
 const selectedPlayer = ref(null)
 const isSwapMode = ref(false)
 const playerToSwap = ref(null)
+const isTransferModalOpen = ref(false)
+const oldPlayer = ref(null)
+const newPlayer = ref(null)
 
 const showPlayerList = ref(false)
 const availablePlayers = ref([])
 
 const fetchTeamInfo = async () => {
   try {
-    const accessToken = userStore.accessToken
-    if (!accessToken) {
-      return
-    }
-
     const response = await fetch('http://127.0.0.1:8000/api/internal/v1/user/team/team-info/', {
       headers: {
-        'Authorization': `Bearer ${accessToken}`
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
       }
     })
 
     if (!response.ok) {
-      return
+      throw new Error('Ошибка при получении информации о команде')
     }
 
     const data = await response.json()
-
+    console.log('Информация о команде обновлена:', data)
+    
+    // Инициализируем пустые массивы
     squad.value = {
       gkp: [],
       def: [],
@@ -183,6 +184,7 @@ const fetchTeamInfo = async () => {
       fwd: []
     }
 
+    // Заполняем основной состав
     if (data.start_players && data.start_players.length > 0) {
       data.start_players.forEach(player => {
         const position = player.position.toLowerCase()
@@ -199,6 +201,7 @@ const fetchTeamInfo = async () => {
       })
     }
 
+    // Заполняем запасных
     if (data.bench_players && data.bench_players.length > 0) {
       data.bench_players.forEach(player => {
         const position = player.position.toLowerCase()
@@ -215,7 +218,7 @@ const fetchTeamInfo = async () => {
       })
     }
   } catch (error) {
-    console.error('Ошибка при загрузке информации о команде:', error)
+    console.error('Ошибка при получении информации о команде:', error)
   }
 }
 
@@ -259,35 +262,23 @@ const handleMenuClick = (menu) => {
 }
 
 const openTransferModal = (player) => {
+  console.log('ID выбранного игрока:', player.id)
+  oldPlayer.value = player.id
   selectedPlayer.value = player
-  showTransferModal.value = true
+  isTransferModalOpen.value = true
 }
 
 const closeTransferModal = () => {
-  showTransferModal.value = false
+  console.log('Closing transfer modal')
+  isTransferModalOpen.value = false
   selectedPlayer.value = null
 }
 
-const handleTransfer = async (player) => {
-  try {
-    const accessToken = userStore.accessToken
-    if (!accessToken) {
-      return
-    }
-
-    const response = await axios.get(`http://127.0.0.1:8000/api/internal/v1/user/team/available-players/${player.id}/`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    })
-
-    if (response.data && response.data.results) {
-      availablePlayers.value = response.data.results
-      showPlayerList.value = true
-    }
-  } catch (error) {
-    console.error('Ошибка при получении списка доступных игроков:', error)
-  }
+const handleTransfer = (player) => {
+  console.log('ID нового игрока:', player.id)
+  newPlayer.value = player.id
+  // Обновляем состав команды
+  fetchTeamInfo()
 }
 
 const closePlayerList = () => {
@@ -295,29 +286,35 @@ const closePlayerList = () => {
   availablePlayers.value = []
 }
 
-const handlePlayerSelect = async (player) => {
-  const accessToken = userStore.accessToken
-  if (!accessToken) {
-    return
-  }
-
-  const response = await axios.post(
-    'http://127.0.0.1:8000/api/internal/v1/user/team/transfer/',
-    {
-      player_out_id: selectedPlayer.value.id,
-      player_in_id: player.id
-    },
-    {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
+const handlePlayerSelect = async (newPlayer) => {
+  console.log('Выбран новый игрок:', newPlayer)
+  try {
+    const accessToken = userStore.accessToken
+    if (!accessToken) {
+      console.error('Нет токена доступа')
+      return
     }
-  )
 
-  if (response.data) {
+    const response = await fetch('http://127.0.0.1:8000/api/internal/v1/user/team/transfer/', {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        old_player: selectedPlayer.value.id,
+        new_player: newPlayer.id
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Ошибка при совершении трансфера')
+    }
+
+    showPlayerList.value = false
     await fetchTeamInfo()
-    closePlayerList()
-    closeTransferModal()
+  } catch (error) {
+    console.error('Ошибка при совершении трансфера:', error)
   }
 }
 

@@ -80,8 +80,8 @@
                   <img :src="player.t_shirt" :alt="player.surname" class="player-shirt">
                   <div class="player-info bench-info">
                     <span class="player-name bench-name">{{ player.surname }}</span>
+                    <span v-if="player.is_captain" class="captain-badge">C</span>
                   </div>
-                  <span v-if="player.is_captain" class="captain-badge">C</span>
                 </div>
               </div>
             </div>
@@ -97,7 +97,6 @@
       @startSwap="startSwap"
       @captainChanged="fetchTeamInfo"
     />
-    <PopupModal :visible="showPopup" :message="popupMsg" @close="showPopup = false" />
   </div>
 </template>
 
@@ -109,7 +108,6 @@ import axios from 'axios'
 import UserInfo from '@/components/UserInfo.vue'
 import FantasyHeader from '@/components/FantasyHeader.vue'
 import PlayerSwapModal from '@/components/PlayerSwapModal.vue'
-import PopupModal from '@/components/PopupModal.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -132,9 +130,6 @@ const showSwapModal = ref(false)
 const selectedPlayer = ref(null)
 const isSwapMode = ref(false)
 const playerToSwap = ref(null)
-
-const showPopup = ref(false)
-const popupMsg = ref('')
 
 // Вычисляемое свойство для имени команды
 const teamName = computed(() => {
@@ -182,9 +177,11 @@ const handleLogout = async () => {
 }
 
 const fetchTeamInfo = async () => {
+  console.log('Начало загрузки информации о команде')
   try {
     const accessToken = userStore.accessToken
     if (!accessToken) {
+      console.error('Нет токена доступа')
       return
     }
 
@@ -195,10 +192,12 @@ const fetchTeamInfo = async () => {
     })
 
     if (!response.ok) {
+      console.error('Ошибка при получении информации о команде:', response.status)
       return
     }
 
     const data = await response.json()
+    console.log('Получены данные команды:', data)
 
     // Очищаем текущие данные
     squad.value = {
@@ -216,8 +215,10 @@ const fetchTeamInfo = async () => {
 
     // Обрабатываем стартовый состав
     if (data.start_players && data.start_players.length > 0) {
+      console.log('Обработка стартового состава:', data.start_players)
       data.start_players.forEach(player => {
         const position = player.position.toLowerCase()
+        console.log('Обработка игрока:', { surname: player.surname, position })
         if (squad.value[position]) {
           squad.value[position].push({
             id: player.id,
@@ -232,8 +233,10 @@ const fetchTeamInfo = async () => {
 
     // Обрабатываем запасных
     if (data.bench_players && data.bench_players.length > 0) {
+      console.log('Обработка запасных:', data.bench_players)
       data.bench_players.forEach(player => {
         const position = player.position.toLowerCase()
+        console.log('Обработка запасного игрока:', { surname: player.surname, position })
         if (bench.value[position]) {
           bench.value[position].push({
             id: player.id,
@@ -245,7 +248,10 @@ const fetchTeamInfo = async () => {
         }
       })
     }
+
+    console.log('Итоговый состав:', { squad: squad.value, bench: bench.value })
   } catch (error) {
+    console.error('Ошибка при загрузке информации о команде:', error)
   }
 }
 
@@ -267,27 +273,17 @@ const startSwap = (player) => {
 }
 
 const handleBenchPlayerClick = async (player) => {
-  if (!isSwapMode.value || !playerToSwap.value) return;
-
-  console.log('Starting swap validation:');
-  console.log('Player to swap (outgoing):', playerToSwap.value);
-  console.log('Bench player (incoming):', player);
+  if (!isSwapMode.value || !playerToSwap.value) return
 
   // Создаем копию текущего состава
-  const newSquad = JSON.parse(JSON.stringify(squad.value));
-  console.log('Initial newSquad copy:', newSquad);
-
-  // Определяем фактические позиции игроков для замены
-  const outgoingPlayerPosition = playerToSwap.value.position.toLowerCase();
-  const incomingPlayerPosition = player.position.toLowerCase();
-
-  // Удаляем старого игрока из его фактической позиции
-  newSquad[outgoingPlayerPosition] = newSquad[outgoingPlayerPosition].filter(p => p.id !== playerToSwap.value.id);
-  console.log('newSquad after removing outgoing player:', newSquad);
-
-  // Добавляем нового игрока в его фактическую позицию
-  newSquad[incomingPlayerPosition].push(player);
-  console.log('newSquad after adding incoming player:', newSquad);
+  const newSquad = JSON.parse(JSON.stringify(squad.value))
+  const currentPosition = playerToSwap.value.position.toLowerCase()
+  
+  // Удаляем текущего игрока из основного состава
+  newSquad[currentPosition] = newSquad[currentPosition].filter(p => p.id !== playerToSwap.value.id)
+  
+  // Добавляем выбранного игрока в основной состав
+  newSquad[currentPosition].push(player)
 
   // Считаем количество игроков по позициям
   const positionCounts = {
@@ -295,35 +291,30 @@ const handleBenchPlayerClick = async (player) => {
     def: newSquad.def.length,
     mid: newSquad.mid.length,
     fwd: newSquad.fwd.length
-  };
-  console.log('Calculated positionCounts:', positionCounts);
+  }
 
   // Проверяем ограничения
-  let errorMessage = null;
+  let errorMessage = null
 
   if (positionCounts.gkp !== 1) {
-    errorMessage = 'В основном составе должен быть ровно 1 вратарь';
+    errorMessage = 'В основном составе должен быть ровно 1 вратарь'
   } else if (positionCounts.def < 3 || positionCounts.def > 5) {
-    errorMessage = 'В основном составе должно быть от 3 до 5 защитников';
+    errorMessage = 'В основном составе должно быть от 3 до 5 защитников'
   } else if (positionCounts.mid < 3 || positionCounts.mid > 5) {
-    errorMessage = 'В основном составе должно быть от 3 до 5 полузащитников';
+    errorMessage = 'В основном составе должно быть от 3 до 5 полузащитников'
   } else if (positionCounts.fwd < 1 || positionCounts.fwd > 3) {
-    errorMessage = 'В основном составе должно быть от 1 до 3 нападающих';
+    errorMessage = 'В основном составе должно быть от 1 до 3 нападающих'
   }
 
   if (errorMessage) {
-    console.log('Validation failed:', errorMessage);
-    popupMsg.value = errorMessage;
-    showPopup.value = true;
-    return;
+    alert(errorMessage)
+    return
   }
-  console.log('Validation passed. Proceeding with API call.');
 
   try {
     const accessToken = userStore.accessToken
     if (!accessToken) {
-      popupMsg.value = 'Нет токена доступа. Пожалуйста, войдите снова.';
-      showPopup.value = true;
+      console.error('Нет токена доступа')
       return
     }
 
@@ -343,10 +334,11 @@ const handleBenchPlayerClick = async (player) => {
       throw new Error('Ошибка при замене игроков')
     }
 
+    // Обновляем состав после успешной замены
     await fetchTeamInfo()
   } catch (error) {
-    popupMsg.value = 'Произошла ошибка при замене игроков';
-    showPopup.value = true;
+    console.error('Ошибка при замене игроков:', error)
+    alert('Произошла ошибка при замене игроков')
   } finally {
     isSwapMode.value = false
     playerToSwap.value = null
@@ -537,16 +529,6 @@ onMounted(() => {
   margin-right: auto;
 }
 
-/* Специальные стили для ряда с вратарем */
-.squad-row:first-child {
-  justify-content: center;
-  min-height: 135px;
-}
-
-.squad-row:first-child .player-slot {
-  margin: 0 auto;
-}
-
 .squad-row:last-child {
   border-bottom: none;
   margin-bottom: 0;
@@ -678,42 +660,38 @@ onMounted(() => {
   font-size: 0.85rem;
 }
 
-.bench-row .captain-badge {
-  top: 35px;
-  left: 2px;
-}
-
-.bench-position {
+.bench-player {
   position: absolute;
-  top: 0.5rem;
-  left: 0;
-  right: 0;
-  text-align: center;
+  top: -4.5rem;
+  left: 0.2rem;
+  background: #ff2e6e;
   color: #fff;
-  background: #37003c;
-  font-size: 0.7rem;
-  font-weight: 600;
-  border-radius: 4px 4px 0 0;
-  padding: 0.1rem 0;
+  font-weight: 700;
+  font-size: 0.85rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
   z-index: 2;
-  width: 90%;
-  margin: 0 auto;
 }
 
-.bench-info {
-  bottom: 0.1rem;
-}
-
-.bench-name {
-  display: block;
-  margin-bottom:-1.25rem;
-}
-
-.player-info {
+.bench-player .captain-badge {
   position: absolute;
-  bottom: 0.5rem;
-  left: 0;
-  right: 0;
+  top: -4.5rem;
+  left: 0.2rem;
+  background: #ff2e6e;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  z-index: 2;
 }
 
 .captain-badge {
@@ -731,6 +709,32 @@ onMounted(() => {
   justify-content: center;
   border-radius: 4px;
   z-index: 2;
+}
+
+.bench-position {
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #fff;
+  background: #37003c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 4px 4px 0 0;
+  padding: 0.1rem 0;
+  z-index: 2;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.bench-info {
+  bottom: 0.1rem;
+}
+
+.bench-name {
+  display: block;
+  margin-bottom:-1.25rem;
 }
 
 @media (max-width: 1100px) {
