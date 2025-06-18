@@ -104,7 +104,7 @@
       :is-open="isTransferModalOpen"
       :current-player="selectedPlayer"
       @close="closeTransferModal"
-      @transfer="handleTransfer"
+      @transfer-completed="handleTransferCompleted"
     />
     <PlayerListModal
       :visible="showPlayerList"
@@ -156,21 +156,29 @@ const showPlayerList = ref(false)
 const availablePlayers = ref([])
 
 const fetchTeamInfo = async () => {
+  console.log('Начало загрузки информации о команде')
   try {
+    const accessToken = userStore.accessToken
+    if (!accessToken) {
+      console.error('Нет токена доступа')
+      return
+    }
+
     const response = await fetch('http://127.0.0.1:8000/api/internal/v1/user/team/team-info/', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        'Authorization': `Bearer ${accessToken}`
       }
     })
 
     if (!response.ok) {
-      throw new Error('Ошибка при получении информации о команде')
+      console.error('Ошибка при получении информации о команде:', response.status)
+      return
     }
 
     const data = await response.json()
-    console.log('Информация о команде обновлена:', data)
-    
-    // Инициализируем пустые массивы
+    console.log('Получены данные команды:', data)
+
+    // Очищаем текущие данные
     squad.value = {
       gkp: [],
       def: [],
@@ -184,41 +192,65 @@ const fetchTeamInfo = async () => {
       fwd: []
     }
 
-    // Заполняем основной состав
+    // Обрабатываем стартовый состав
     if (data.start_players && data.start_players.length > 0) {
+      console.log('Обработка стартового состава:', data.start_players)
       data.start_players.forEach(player => {
         const position = player.position.toLowerCase()
+        console.log('Обработка игрока:', { surname: player.surname, position })
         if (squad.value[position]) {
           squad.value[position].push({
             id: player.id,
             surname: player.surname,
             position: position,
             t_shirt: player.t_shirt,
-            points: player.points ?? 0,
-            cost: player.cost ?? 0
+            is_captain: player.is_captain
           })
         }
       })
     }
 
-    // Заполняем запасных
+    // Обрабатываем запасных
     if (data.bench_players && data.bench_players.length > 0) {
+      console.log('Обработка запасных:', data.bench_players)
       data.bench_players.forEach(player => {
         const position = player.position.toLowerCase()
+        console.log('Обработка запасного:', { surname: player.surname, position })
         if (bench.value[position]) {
           bench.value[position].push({
             id: player.id,
             surname: player.surname,
             position: position,
             t_shirt: player.t_shirt,
-            points: player.points ?? 0,
-            cost: player.cost ?? 0
+            is_captain: player.is_captain
           })
         }
       })
     }
+
+    // Обновляем имя команды
+    teamName.value = data.name || 'Моя команда'
   } catch (error) {
     console.error('Ошибка при получении информации о команде:', error)
+  }
+}
+
+const fetchBudget = async () => {
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/internal/v1/user/team/budget/', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Ошибка при получении бюджета')
+    }
+
+    const data = await response.json()
+    userStore.profile.budget = data.budget
+  } catch (error) {
+    console.error('Ошибка при получении бюджета:', error)
   }
 }
 
@@ -286,24 +318,18 @@ const closePlayerList = () => {
   availablePlayers.value = []
 }
 
-const handlePlayerSelect = async (newPlayer) => {
-  console.log('Выбран новый игрок:', newPlayer)
+const handlePlayerSelect = async (player) => {
   try {
-    const accessToken = userStore.accessToken
-    if (!accessToken) {
-      console.error('Нет токена доступа')
-      return
-    }
-
+    console.log('Выбран новый игрок:', player)
     const response = await fetch('http://127.0.0.1:8000/api/internal/v1/user/team/transfer/', {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
       },
       body: JSON.stringify({
-        old_player: selectedPlayer.value.id,
-        new_player: newPlayer.id
+        new_player: player.id,
+        old_player: selectedPlayer.value.id
       })
     })
 
@@ -311,11 +337,31 @@ const handlePlayerSelect = async (newPlayer) => {
       throw new Error('Ошибка при совершении трансфера')
     }
 
+    // Закрываем все модальные окна
+    isTransferModalOpen.value = false
     showPlayerList.value = false
-    await fetchTeamInfo()
+    selectedPlayer.value = null
+
+    // Обновляем информацию о команде и бюджете
+    await Promise.all([
+      fetchTeamInfo(),
+      fetchBudget()
+    ])
+    
+    // Показываем уведомление об успешном трансфере
+    alert('Трансфер успешно совершен!')
   } catch (error) {
     console.error('Ошибка при совершении трансфера:', error)
+    alert('Произошла ошибка при совершении трансфера')
   }
+}
+
+const handleTransferCompleted = async () => {
+  // Обновляем информацию о команде и бюджете
+  await Promise.all([
+    fetchTeamInfo(),
+    fetchBudget()
+  ])
 }
 
 </script>

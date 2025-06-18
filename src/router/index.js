@@ -5,6 +5,8 @@ import MyTeamView from '@/views/MyTeamView.vue'
 import CreateTeamView from '@/views/CreateTeamView.vue'
 import MatchDetails from '@/components/MatchDetails.vue'
 import PointsView from '@/views/PointsView.vue'
+import FantasyView from '@/views/FantasyView.vue'
+import HomeView from '@/views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,13 +30,13 @@ const router = createRouter({
     },
     {
       path: '/',
-      redirect: '/fantasy'
+      name: 'home',
+      component: HomeView
     },
     {
       path: '/fantasy',
       name: 'fantasy',
-      component: () => import('@/views/HomeView.vue'),
-      meta: { requiresAuth: true }
+      component: FantasyView
     },
     {
       path: '/transfers',

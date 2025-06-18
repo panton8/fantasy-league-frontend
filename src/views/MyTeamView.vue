@@ -719,7 +719,7 @@ onMounted(() => {
   text-align: center;
   color: #fff;
   background: #37003c;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   border-radius: 4px 4px 0 0;
   padding: 0.1rem 0;
